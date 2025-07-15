@@ -1,0 +1,4 @@
+pyfirmata2
+fastapi[standard]
+pynput
+uvicorn

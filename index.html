@@ -26,6 +26,23 @@
         border: 8px solid #121212;
       }
 
+      .start-title {
+        width: calc(100% - 144px);
+        font-size: 96px;
+        font-family: 'Poppins', sans-serif;
+        font-weight: 800;
+        text-shadow: 0px 8px 0px #000;
+        -webkit-text-stroke-width: 12px;
+        -webkit-text-stroke-color: #000;
+        paint-order: stroke fill;
+        color: #fff;
+        text-align: center;
+        background-color: #242424;
+        padding: 16px 64px;
+        border-radius: 32px;
+        border: 8px solid #121212;
+      }
+
       #background {
         position: fixed;
         top: 0;
@@ -78,7 +95,25 @@
         margin-bottom: 16px;
       }
 
+      #buzzer-start-green,
+      #buzzer-start-red {
+        width: 96px;
+        height: 96px;
+      }
+
       .quiz-container {
+        position: absolute;
+        top: 50%;
+        left: 25%;
+        transform: translate(-50%, -50%);
+        width: 896px;
+        height: calc(100% - 64px);
+        display: none;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+
+      .start-screen {
         position: absolute;
         top: 50%;
         left: 25%;
@@ -87,7 +122,8 @@
         height: calc(100% - 64px);
         display: flex;
         flex-direction: column;
-        justify-content: space-between;
+        justify-content: center;
+        gap: 128px;
       }
 
       .score-container {
@@ -115,7 +151,7 @@
     </style>
   </head>
   <body>
-    <div class="quiz-container">
+    <div id="quiz-container" class="quiz-container">
       <div id="question-text" class="question-text">Test</div>
       <div class="answer-div">
         <div class="score-div">
@@ -129,6 +165,19 @@
         <div class="answer-container">
           <img id="buzzer-red" class="buzzer-image" src="buzzer-red-up.webp"/>
           <div id="answer-b" class="answer-text">Answer B</div>
+        </div>
+      </div>
+    </div>
+    <div id="start-screen" class="start-screen">
+      <div style="display: flex; flex-direction: column; gap: 16px;">
+        <div id="question-text" class="start-title">KiQui</div>
+        <div style="font-size: 52px !important;" id="question-text" class="question-text">How much do you know about AI's impact on the environment?</div>
+      </div>
+      <div class="answer-div">
+        <div class="answer-container">
+          <img id="buzzer-start-green" class="buzzer-image" src="buzzer-green-up.webp"/>
+          <div style="font-size: 40px;" id="answer-a" class="answer-text">Press any button to start</div>
+          <img id="buzzer-start-red" class="buzzer-image" src="buzzer-red-up.webp"/>
         </div>
       </div>
     </div>

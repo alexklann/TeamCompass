@@ -96,6 +96,11 @@ var buzzerAnimationTimer = 0;
 var currentUserScore = 0;
 var todaysHighScore = 0;
 
+var currentScreen = 'start';
+
+var currentHealth = 3;
+var lastHealth = 0;
+
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(
     75,
@@ -154,7 +159,8 @@ function showQuestion(questionText, answerA, answerB, correctAnswer) {
 
 function getRandomQuestion() {
     if (answeredQuestions.length === questions.length) {
-        restartGame();
+        currentScreen = 'start';
+        changeBackground('default');
         return null;
     }
     let randomIndex;
@@ -185,6 +191,7 @@ function answerQuestion(guess) {
                 todaysHighScore = currentUserScore;
             }
         } else {
+            currentHealth -= 1;
             changeBackground('incorrect');
         }
     } else if (guess === 1) {
@@ -195,6 +202,7 @@ function answerQuestion(guess) {
                 todaysHighScore = currentUserScore;
             }
         } else {
+            currentHealth -= 1;
             changeBackground('incorrect');
         }
     } else {
@@ -220,23 +228,43 @@ function onKeyDown(event) {
     var keycode = event.which;
     switch (keycode) {
         case 49:
+            if (currentScreen === 'start') {
+                restartGame();
+                return;
+            }
             answerQuestion(0); // 1 key
             break;
         case 50:
+            if (currentScreen === 'start') {
+                restartGame();
+                return;
+            }
             answerQuestion(1); // 2 key
             break;
     }
 }
 
 function switchBuzzerAnimationState() {
-    if (buzzerAnimationState === 0) {
-        buzzerAnimationState = 1; // Switch to Down
-        document.getElementById('buzzer-green').src = 'buzzer-green-down.webp';
-        document.getElementById('buzzer-red').src = 'buzzer-red-down.webp';
+    if (currentScreen === 'start') {
+        if (buzzerAnimationState === 0) {
+            buzzerAnimationState = 1; // Switch to Down
+            document.getElementById('buzzer-start-green').src = 'buzzer-green-down.webp';
+            document.getElementById('buzzer-start-red').src = 'buzzer-red-down.webp';
+        } else {
+            buzzerAnimationState = 0; // Switch to Up
+            document.getElementById('buzzer-start-green').src = 'buzzer-green-up.webp';
+            document.getElementById('buzzer-start-red').src = 'buzzer-red-up.webp';
+        }
     } else {
-        buzzerAnimationState = 0; // Switch to Up
-        document.getElementById('buzzer-green').src = 'buzzer-green-up.webp';
-        document.getElementById('buzzer-red').src = 'buzzer-red-up.webp';
+        if (buzzerAnimationState === 0) {
+            buzzerAnimationState = 1; // Switch to Down
+            document.getElementById('buzzer-green').src = 'buzzer-green-down.webp';
+            document.getElementById('buzzer-red').src = 'buzzer-red-down.webp';
+        } else {
+            buzzerAnimationState = 0; // Switch to Up
+            document.getElementById('buzzer-green').src = 'buzzer-green-up.webp';
+            document.getElementById('buzzer-red').src = 'buzzer-red-up.webp';
+        }
     }
 }
 
@@ -252,6 +280,20 @@ function restartGame() {
     randomQuestion = getRandomQuestion();
     showQuestion(randomQuestion.question, randomQuestion.answers[0], randomQuestion.answers[1], randomQuestion.correctAnswer);
     changeBackground('default');
+    currentScreen = 'quiz'
+}
+
+function toggleLED(port, status) {
+    fetch('http://127.0.0.1:8000/led', {
+        method: 'POST',
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            port: port,
+            status: status
+        })
+    })
 }
 
 function update() {
@@ -265,6 +307,19 @@ function update() {
     if (buzzerAnimationTimer >= 0.7) {
         switchBuzzerAnimationState();
         buzzerAnimationTimer = 0;
+    }
+    if (currentScreen === 'start') {
+        document.getElementById('start-screen').style.display = 'flex';
+        document.getElementById('quiz-container').style.display = 'none';
+    } else {
+        document.getElementById('start-screen').style.display = 'none';
+        document.getElementById('quiz-container').style.display = 'flex';
+    }
+    if (lastHealth != currentHealth) {
+        toggleLED(2, currentHealth == 3);
+        toggleLED(3, currentHealth >= 2);
+        toggleLED(4, currentHealth >= 1);
+        lastHealth = currentHealth;
     }
     renderer.render(scene, camera);
 }
