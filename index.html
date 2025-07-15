@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
     <style>
-      body { margin: 0; }
+      body, p { margin: 0; }
 
       .question-text {
         width: calc(100% - 144px);
@@ -126,6 +126,18 @@
         gap: 128px;
       }
 
+      .end-screen {
+        position: absolute;
+        top: 50%;
+        left: 25%;
+        transform: translate(-50%, -50%);
+        width: 896px;
+        height: calc(100% - 64px);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+
       .score-container {
         font-family: 'Poppins', sans-serif;
         font-weight: 800;
@@ -172,12 +184,26 @@
       <div style="display: flex; flex-direction: column; gap: 16px;">
         <div id="question-text" class="start-title">KiQui</div>
         <div style="font-size: 52px !important;" id="question-text" class="question-text">How much do you know about AI's impact on the environment?</div>
+        <p id="start-high-score" class="question-text">Today's High Score:<br/>0</p>
       </div>
       <div class="answer-div">
         <div class="answer-container">
           <img id="buzzer-start-green" class="buzzer-image" src="buzzer-green-up.webp"/>
           <div style="font-size: 40px;" id="answer-a" class="answer-text">Press any button to start</div>
           <img id="buzzer-start-red" class="buzzer-image" src="buzzer-red-up.webp"/>
+        </div>
+      </div>
+    </div>
+    <div id="end-screen" class="end-screen">
+      <div style="display: flex; flex-direction: column; gap: 16px;">
+        <div id="question-text" class="start-title">KiQui</div>
+        <a style="font-size: 52px !important;" id="end-score-text" class="question-text">You've scored 0 points!<br/>Try again!</a>
+      </div>
+      <div class="answer-div">
+        <div class="answer-container">
+          <img id="buzzer-end-green" class="buzzer-image" src="buzzer-green-up.webp"/>
+          <div style="font-size: 40px;" id="answer-a" class="answer-text">Press any button to continue</div>
+          <img id="buzzer-end-red" class="buzzer-image" src="buzzer-red-up.webp"/>
         </div>
       </div>
     </div>

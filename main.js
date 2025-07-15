@@ -93,6 +93,8 @@ var currentQuestion = null;
 var buzzerAnimationState = 0; // 0 Up 1 Down
 var buzzerAnimationTimer = 0;
 
+var endScreenTimer = 0;
+
 var currentUserScore = 0;
 var todaysHighScore = 0;
 
@@ -158,9 +160,8 @@ function showQuestion(questionText, answerA, answerB, correctAnswer) {
 }
 
 function getRandomQuestion() {
-    if (answeredQuestions.length === questions.length) {
-        currentScreen = 'start';
-        changeBackground('default');
+    if (answeredQuestions.length === questions.length || currentHealth == 0) {
+        currentScreen = 'end';
         return null;
     }
     let randomIndex;
@@ -231,12 +232,20 @@ function onKeyDown(event) {
             if (currentScreen === 'start') {
                 restartGame();
                 return;
+            } else if (currentScreen === 'end') {
+                changeBackground('default');
+                currentScreen = 'start';
+                return;
             }
             answerQuestion(0); // 1 key
             break;
         case 50:
             if (currentScreen === 'start') {
                 restartGame();
+                return;
+            } else if (currentScreen === 'end') {
+                changeBackground('default');
+                currentScreen = 'start';
                 return;
             }
             answerQuestion(1); // 2 key
@@ -255,7 +264,7 @@ function switchBuzzerAnimationState() {
             document.getElementById('buzzer-start-green').src = 'buzzer-green-up.webp';
             document.getElementById('buzzer-start-red').src = 'buzzer-red-up.webp';
         }
-    } else {
+    } else if (currentScreen === 'quiz') {
         if (buzzerAnimationState === 0) {
             buzzerAnimationState = 1; // Switch to Down
             document.getElementById('buzzer-green').src = 'buzzer-green-down.webp';
@@ -265,15 +274,29 @@ function switchBuzzerAnimationState() {
             document.getElementById('buzzer-green').src = 'buzzer-green-up.webp';
             document.getElementById('buzzer-red').src = 'buzzer-red-up.webp';
         }
+    } else {
+        if (buzzerAnimationState === 0) {
+            buzzerAnimationState = 1; // Switch to Down
+            document.getElementById('buzzer-end-green').src = 'buzzer-green-down.webp';
+            document.getElementById('buzzer-end-red').src = 'buzzer-red-down.webp';
+        } else {
+            buzzerAnimationState = 0; // Switch to Up
+            document.getElementById('buzzer-end-green').src = 'buzzer-green-up.webp';
+            document.getElementById('buzzer-end-red').src = 'buzzer-red-up.webp';
+        }
     }
 }
 
 function updateScoreText() {
     document.getElementById('current-score').innerHTML = `Your Score:\n${currentUserScore}`;
     document.getElementById('high-score').innerHTML = `High Score:\n${todaysHighScore}`;
+    document.getElementById('end-score-text').innerHTML = `You've scored ${currentUserScore} points!<br/>Try again!`;
+    document.getElementById('start-high-score').innerHTML = `Today's High Score:<br/>${todaysHighScore}`;
 }
 
 function restartGame() {
+    currentHealth = 3;
+    lastHealth = 0;
     answeredQuestions = [];
     currentUserScore = 0;
     updateScoreText();
@@ -304,6 +327,14 @@ function update() {
         model.rotation.x += 0.08 * delta;
     }
     buzzerAnimationTimer += delta;
+    if (currentScreen === 'end') {
+        endScreenTimer += delta;
+        if (endScreenTimer >= 30.0) {
+            changeBackground('default');
+            currentScreen = 'start';
+            return;
+        }
+    }
     if (buzzerAnimationTimer >= 0.7) {
         switchBuzzerAnimationState();
         buzzerAnimationTimer = 0;
@@ -311,9 +342,15 @@ function update() {
     if (currentScreen === 'start') {
         document.getElementById('start-screen').style.display = 'flex';
         document.getElementById('quiz-container').style.display = 'none';
-    } else {
+        document.getElementById('end-screen').style.display = 'none';
+    } else if (currentScreen === 'quiz') {
         document.getElementById('start-screen').style.display = 'none';
         document.getElementById('quiz-container').style.display = 'flex';
+        document.getElementById('end-screen').style.display = 'none';
+    } else {
+        document.getElementById('start-screen').style.display = 'none';
+        document.getElementById('quiz-container').style.display = 'none';
+        document.getElementById('end-screen').style.display = 'flex';
     }
     if (lastHealth != currentHealth) {
         toggleLED(2, currentHealth == 3);
