@@ -1,13 +1,14 @@
 import * as THREE from "three";
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
-// Current count: 15 questions
+// Current count: 21 questions
 // https://en.wikipedia.org/wiki/Environmental_impact_of_artificial_intelligence
 // https://news.climate.columbia.edu/2023/06/09/ais-growing-carbon-footprint/
 // https://www.technologyreview.com/2025/05/20/1116327/ai-energy-usage-climate-footprint-big-tech/
 // https://www.polytechnique-insights.com/en/columns/energy/generative-ai-energy-consumption-soars/
 // https://www.unep.org/news-and-stories/story/ai-has-environmental-problem-heres-what-world-can-do-about?__cf_chl_tk=yCmOlUqLrgYAe8HeI3fr_ZMJN1YJ7i1fBDnXXz2lq04-1751050880-1.0.1.1-eSX1XT.5hTWqd9ZHK4D_UjyisZXfRGmsheAJ0.JR4ik
 // https://news.mit.edu/2025/explained-generative-ai-environmental-impact-0117
+// https://oecd.ai/en/wonk/how-much-water-does-ai-consume?utm_source=chatgpt.com
 const questions = [
     {
         question: "How much water does GPT use for a 100 word email?",
@@ -84,6 +85,41 @@ const questions = [
         answers: ["1.5M", "1.3M"],
         correctAnswer: "1.5M"
     },
+    {
+        question: "How much ultra-pure water does it take to produce a microchip?",
+        answers: ["1,853", "2,200"],
+        correctAnswer: "2,200"
+    },
+    {
+        question: "How water can GPT-4 use to generate a 100 word email?",
+        answers: ["Up to 750ml", "Up to 1,400ml"],
+        correctAnswer: "Up to 1,400ml"
+    },
+    {
+        question: "How much more water does GPT-4 use compared to GPT-3?",
+        answers: ["8x more", "14x more"],
+        correctAnswer: "14x more"
+    },
+    {
+        question: "Why does AI training use up water?",
+        answers: ["The AI models get thirsty", "Water is used for cooling the servers"],
+        correctAnswer: "Water is used for cooling the servers"
+    },
+    {
+        question: "How much has power usage gone up in data centers in 2023?",
+        answers: ["1.78x", "1.50x"],
+        correctAnswer: "1.50x"
+    },
+    {
+        question: "How much electricity usage will data centers approach by 2026?",
+        answers: ["876MWh", "1,050TWh"],
+        correctAnswer: "1,050TWh"
+    },
+    {
+        question: "How many U.S. homes could be powered from the power usage of GPT-3's training for a year?",
+        answers: ["154", "120"],
+        correctAnswer: "120"
+    },
 ]
 
 var answeredQuestions = [];
@@ -103,6 +139,13 @@ var currentScreen = 'start';
 var currentHealth = 3;
 var lastHealth = 0;
 
+const modelCache = {
+    "3hp.glb": null,
+    "2hp.glb": null,
+    "1hp.glb": null,
+    "0hp.glb": null
+};
+
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(
     75,
@@ -115,23 +158,78 @@ const renderer = new THREE.WebGLRenderer({ alpha: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
-// const controls = new OrbitControls( camera, renderer.domElement );
 const clock = new THREE.Clock();
 const loader = new GLTFLoader();
 
-var model = null;
-loader.load(
-    'world1.glb',
-    function (gltf) {
-        model = gltf.scene;
-        model.scale.set(0.75, 0.75, 0.75); // Scale down the model
-        scene.add(model);
-    },
-    undefined,
-    function (error) {
-        console.error('An error happened while loading the model:', error);
+let modelsToLoad = Object.keys(modelCache).length;
+let modelsLoaded = 0;
+
+function preloadModel(url, scale = 0.75, position = { x: 0, y: 0, z: 0 }, callback = null) {
+    loader.load(
+        url,
+        function (gltf) {
+            const loaded = gltf.scene;
+            loaded.scale.set(scale, scale, scale);
+            loaded.position.set(position.x, position.y, position.z);
+            loaded.visible = false;
+            modelCache[url] = loaded;
+            scene.add(loaded);
+
+            modelsLoaded++;
+            if (modelsLoaded === modelsToLoad) {
+                onAllModelsLoaded();
+            }
+
+            if (callback) callback(loaded);
+        },
+        undefined,
+        function (error) {
+            console.error(`Error preloading model "${url}":`, error);
+        }
+    );
+}
+
+function onAllModelsLoaded() {
+    setCorrectModel();
+    update();
+}
+
+preloadModel("3hp.glb");
+preloadModel("2hp.glb");
+preloadModel("1hp.glb");
+preloadModel("0hp.glb");
+
+let model = null;
+let currentModelName = "";
+
+function setCorrectModel() {
+    const modelName = `${currentHealth}hp.glb`;
+    if (modelName === currentModelName) return;
+
+    // Hide previous model
+    if (model && modelCache[currentModelName]) {
+        modelCache[currentModelName].visible = false;
     }
-);
+
+    // Show new model
+    const newModel = modelCache[modelName];
+    if (newModel) {
+        newModel.visible = true;
+
+        // Transfer rotation from old model (if any)
+        if (model) {
+            newModel.rotation.x = model.rotation.x;
+            newModel.rotation.y = model.rotation.y;
+            newModel.rotation.z = model.rotation.z;
+        }
+
+        model = newModel;
+        currentModelName = modelName;
+    } else {
+        console.warn(`Model "${modelName}" not yet loaded.`);
+    }
+}
+
 
 const skyColor = 0xB1E1FF;  // light blue
 const groundColor = 0xB97A20;  // brownish orange
@@ -144,9 +242,9 @@ directionalLight.position.set(5, 10, 7.5);
 directionalLight.castShadow = true;
 scene.add(directionalLight);
 
-camera.position.x = -2.75;
-camera.position.y = 2.75;
-camera.position.z = 3;
+camera.position.x = -2.25;
+camera.position.y = 2.25;
+camera.position.z = 5.25;
 
 camera.rotation.x = -0.4;
 camera.rotation.y = 0.01;
@@ -233,8 +331,10 @@ function onKeyDown(event) {
                 restartGame();
                 return;
             } else if (currentScreen === 'end') {
+                currentHealth = 3;
                 changeBackground('default');
                 currentScreen = 'start';
+                lastHealth = 0;
                 return;
             }
             answerQuestion(0); // 1 key
@@ -244,8 +344,10 @@ function onKeyDown(event) {
                 restartGame();
                 return;
             } else if (currentScreen === 'end') {
+                currentHealth = 3;
                 changeBackground('default');
                 currentScreen = 'start';
+                lastHealth = 0;
                 return;
             }
             answerQuestion(1); // 2 key
@@ -290,7 +392,7 @@ function switchBuzzerAnimationState() {
 function updateScoreText() {
     document.getElementById('current-score').innerHTML = `Your Score:\n${currentUserScore}`;
     document.getElementById('high-score').innerHTML = `High Score:\n${todaysHighScore}`;
-    document.getElementById('end-score-text').innerHTML = `You've scored ${currentUserScore} points!<br/>Try again!`;
+    document.getElementById('end-score-text').innerHTML = `You've scored ${currentUserScore} points!<br/>But that's okay!<br/>You're not alone!`;
     document.getElementById('start-high-score').innerHTML = `Today's High Score:<br/>${todaysHighScore}`;
 }
 
@@ -356,8 +458,8 @@ function update() {
         toggleLED(2, currentHealth == 3);
         toggleLED(3, currentHealth >= 2);
         toggleLED(4, currentHealth >= 1);
+        setCorrectModel();
         lastHealth = currentHealth;
     }
     renderer.render(scene, camera);
 }
-update();

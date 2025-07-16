@@ -26,6 +26,32 @@
         border: 8px solid #121212;
       }
 
+      .text-image-container {
+        width: calc(100% - 144px);
+        font-size: 48px;
+        font-family: 'Poppins', sans-serif;
+        font-weight: 800;
+        text-shadow: 0px 8px 0px #000;
+        -webkit-text-stroke-width: 12px;
+        -webkit-text-stroke-color: #000;
+        paint-order: stroke fill;
+        color: #fff;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        background-color: #242424;
+        padding: 16px 64px;
+        border-radius: 32px;
+        border: 8px solid #121212;
+      }
+
+      .qr-code {
+        width: 35%;
+        margin-top: 16px;
+      }
+
       .start-title {
         width: calc(100% - 144px);
         font-size: 96px;
@@ -104,7 +130,7 @@
       .quiz-container {
         position: absolute;
         top: 50%;
-        left: 25%;
+        left: 20%;
         transform: translate(-50%, -50%);
         width: 896px;
         height: calc(100% - 64px);
@@ -116,20 +142,19 @@
       .start-screen {
         position: absolute;
         top: 50%;
-        left: 25%;
+        left: 20%;
         transform: translate(-50%, -50%);
         width: 896px;
         height: calc(100% - 64px);
         display: flex;
         flex-direction: column;
-        justify-content: center;
-        gap: 128px;
+        justify-content: space-between;
       }
 
       .end-screen {
         position: absolute;
         top: 50%;
-        left: 25%;
+        left: 20%;
         transform: translate(-50%, -50%);
         width: 896px;
         height: calc(100% - 64px);
@@ -171,12 +196,12 @@
           <div id="high-score" class="score-container">High Score: 0</div>
         </div>
         <div class="answer-container">
-          <img id="buzzer-green" class="buzzer-image" src="buzzer-green-up.webp"/>
-          <div id="answer-a" class="answer-text">Answer A</div>
-        </div>
-        <div class="answer-container">
           <img id="buzzer-red" class="buzzer-image" src="buzzer-red-up.webp"/>
           <div id="answer-b" class="answer-text">Answer B</div>
+        </div>
+        <div class="answer-container">
+          <img id="buzzer-green" class="buzzer-image" src="buzzer-green-up.webp"/>
+          <div id="answer-a" class="answer-text">Answer A</div>
         </div>
       </div>
     </div>
@@ -188,22 +213,26 @@
       </div>
       <div class="answer-div">
         <div class="answer-container">
-          <img id="buzzer-start-green" class="buzzer-image" src="buzzer-green-up.webp"/>
-          <div style="font-size: 40px;" id="answer-a" class="answer-text">Press any button to start</div>
           <img id="buzzer-start-red" class="buzzer-image" src="buzzer-red-up.webp"/>
+          <div style="font-size: 40px;" id="answer-a" class="answer-text">Press any button to start</div>
+          <img id="buzzer-start-green" class="buzzer-image" src="buzzer-green-up.webp"/>
         </div>
       </div>
     </div>
     <div id="end-screen" class="end-screen">
       <div style="display: flex; flex-direction: column; gap: 16px;">
         <div id="question-text" class="start-title">KiQui</div>
-        <a style="font-size: 52px !important;" id="end-score-text" class="question-text">You've scored 0 points!<br/>Try again!</a>
+        <a style="font-size: 52px !important;" id="end-score-text" class="question-text">You've scored 0 points!<br/>But that's okay!<br/>You're not alone!</a>
+        <div style="font-size: 52px !important;" id="end-score-text" class="text-image-container">
+          Check out our website if you want to learn more!
+          <img class="qr-code" src="qr-code.png"/>
+        </div>
       </div>
       <div class="answer-div">
         <div class="answer-container">
-          <img id="buzzer-end-green" class="buzzer-image" src="buzzer-green-up.webp"/>
-          <div style="font-size: 40px;" id="answer-a" class="answer-text">Press any button to continue</div>
           <img id="buzzer-end-red" class="buzzer-image" src="buzzer-red-up.webp"/>
+          <div style="font-size: 40px;" id="answer-a" class="answer-text">Press any button to continue</div>
+          <img id="buzzer-end-green" class="buzzer-image" src="buzzer-green-up.webp"/>
         </div>
       </div>
     </div>
