@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
-// Current count: 21 questions
+// Current count: 22 questions
 // https://en.wikipedia.org/wiki/Environmental_impact_of_artificial_intelligence
 // https://news.climate.columbia.edu/2023/06/09/ais-growing-carbon-footprint/
 // https://www.technologyreview.com/2025/05/20/1116327/ai-energy-usage-climate-footprint-big-tech/
@@ -11,19 +11,26 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 // https://oecd.ai/en/wonk/how-much-water-does-ai-consume?utm_source=chatgpt.com
 const questions = [
     {
-        question: "How much water does GPT use for a 100 word email?",
+        question: "How much water does GPT-3 use for a 100 word email?",
         answers: ["350ml", "500ml"],
         correctAnswer: "500ml"
     },
     {
-        question: "How much did water usage spike, since the spread of LLMs?",
-        answers: ["25%", "20%"],
-        correctAnswer: "20%"
+        question: "How much more water do we use since everyone started using ChatGPT?",
+        answers: ["25% more", "20% more"],
+        correctAnswer: "20% more"
     },
     {
-        question: "How much energy did the training of GPT-3 use?",
-        answers: ["1351MWh", "1287MWh"],
-        correctAnswer: "1287MWh"
+        // 1200 TWh
+        question: "For how long could you power Disneyland with the energy that GPT-3 used during training?",
+        answers: ["8 days", "13 days"],
+        correctAnswer: "13 days"
+    },
+    {
+        // 1200 TWh
+        question: "How often could you charge up an average electric vehicle (70kWh battery) with the power that GPT-3 used during training?",
+        answers: ["600 million times", "17 billion times"],
+        correctAnswer: "17 billion times"
     },
     {
         question: "How much more energy does an AI search use compared to a Google search?",
@@ -32,11 +39,11 @@ const questions = [
     },
     {
         question: "How many households can be powered by the energy consumed in training GPT-4 for a day?",
-        answers: ["1.53M households", "1.086M households"],
+        answers: ["1.53M households", "683k households"],
         correctAnswer: "1.086M households"
     },
     {
-        question: "How much raw materials does it take to manufacture an AI-ready server?",
+        question: "How much raw material does it take to manufacture an AI-ready server?",
         answers: ["750kg", "800kg"],
         correctAnswer: "800kg"
     },
@@ -46,14 +53,21 @@ const questions = [
         correctAnswer: "35%"
     },
     {
-        question: "How much electricity would be used, if we replaced Google with AI?",
-        answers: ["10TWh per year", "8TWh per year"],
-        correctAnswer: "10TWh per year"
+        question: "How much more electricity would be used, if we replaced Google searches with AI searches?",
+        answers: ["9500x more", "500x more"],
+        correctAnswer: "9500x more"
     },
     {
-        question: "How many tons of CO2 did the training of GPT-3 release?",
-        answers: ["522 Tons", "612 Tons"],
-        correctAnswer: "522 Tons"
+        // 522 Tons of CO2
+        question: "How many flights could you take with the amount of CO2 that GPT-3 released during training?",
+        answers: ["1050 flights", "1457 flights"],
+        correctAnswer: "1050 flights"
+    },
+    {
+        // 522 Tons of CO2
+        question: "How many trees would we need to plant to compensate for the CO2 release with the training of GPT-3?",
+        answers: ["15000 trees", "8600 trees"],
+        correctAnswer: "8600 trees"
     },
     {
         question: "What percentage of global e-waste is caused by AI?",
@@ -61,8 +75,8 @@ const questions = [
         correctAnswer: "8%"
     },
     {
-        question: "On what place is AI in the list of the biggest energy consumers?",
-        answers: ["11th", "15th"],
+        question: "On what place is AI on the leaderboard of the biggest energy consumers?",
+        answers: ["11th", "3rd"],
         correctAnswer: "11th"
     },
     {
@@ -71,24 +85,20 @@ const questions = [
         correctAnswer: "700,000 liters"
     },
     {
+        // 700,000 liters
+        question: "For how long could you shower with the water used in the training of GPT-3?",
+        answers: ["40 days", "18 days"],
+        correctAnswer: "40 days"
+    },
+    {
         question: "How many electric vehicles could be produced with the water that GPT-3 used in training?",
         answers: ["320", "280"],
         correctAnswer: "320"
     },
     {
-        question: "What percentage of freshwater in a small Iowa town is used by Microsoft's AI?",
-        answers: ["5%", "8%"],
-        correctAnswer: "8%"
-    },
-    {
-        question: "How many European residents could be supplied with the energy used by AI in training?",
+        question: "How many European residents could be supplied with the energy used by GPT-3 in training?",
         answers: ["1.5M", "1.3M"],
         correctAnswer: "1.5M"
-    },
-    {
-        question: "How much ultra-pure water does it take to produce a microchip?",
-        answers: ["1,853", "2,200"],
-        correctAnswer: "2,200"
     },
     {
         question: "How water can GPT-4 use to generate a 100 word email?",
@@ -96,7 +106,7 @@ const questions = [
         correctAnswer: "Up to 1,400ml"
     },
     {
-        question: "How much more water does GPT-4 use compared to GPT-3?",
+        question: "How much more water does a GPT-4 query use compared to a GPT-3 query?",
         answers: ["8x more", "14x more"],
         correctAnswer: "14x more"
     },
@@ -107,17 +117,12 @@ const questions = [
     },
     {
         question: "How much has power usage gone up in data centers in 2023?",
-        answers: ["1.78x", "1.50x"],
-        correctAnswer: "1.50x"
+        answers: ["500%", "150%"],
+        correctAnswer: "150%"
     },
     {
-        question: "How much electricity usage will data centers approach by 2026?",
-        answers: ["876MWh", "1,050TWh"],
-        correctAnswer: "1,050TWh"
-    },
-    {
-        question: "How many U.S. homes could be powered from the power usage of GPT-3's training for a year?",
-        answers: ["154", "120"],
+        question: "How many U.S. homes could be powered from the power that was used during the training of GPT-3?",
+        answers: ["500", "120"],
         correctAnswer: "120"
     },
 ]
@@ -392,7 +397,11 @@ function switchBuzzerAnimationState() {
 function updateScoreText() {
     document.getElementById('current-score').innerHTML = `Your Score:\n${currentUserScore}`;
     document.getElementById('high-score').innerHTML = `High Score:\n${todaysHighScore}`;
-    document.getElementById('end-score-text').innerHTML = `You've scored ${currentUserScore} points!<br/>But that's okay!<br/>You're not alone!`;
+    if (currentUserScore+1 >= questions.length) {
+        document.getElementById('end-score-text').innerHTML = `You've scored ${currentUserScore} points!<br/>You got all questions right!`;
+    } else {
+        document.getElementById('end-score-text').innerHTML = `You've scored ${currentUserScore} points!<br/>But that's okay!<br/>You're not alone!`;
+    }
     document.getElementById('start-high-score').innerHTML = `Today's High Score:<br/>${todaysHighScore}`;
 }
 
@@ -431,7 +440,7 @@ function update() {
     buzzerAnimationTimer += delta;
     if (currentScreen === 'end') {
         endScreenTimer += delta;
-        if (endScreenTimer >= 30.0) {
+        if (endScreenTimer >= 45.0) {
             changeBackground('default');
             currentScreen = 'start';
             return;
